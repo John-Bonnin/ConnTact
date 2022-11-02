@@ -22,7 +22,7 @@ objects:
   material: "stainless steel"
   grasping_locations: #points of interest on the pin
     tip:
-      pose: [ 0, 0, 50 ] #location relative to peg root frame
+      pose: [ 0, 0, 140 ] #location relative to peg root frame
       orientation: [ 180, 0, 0 ] #transformation relative to peg root frame
       #gripper_grasp_pose: [1, 2, 3] #Orientation relative to peg root frame. Robot solves path planning to reach this cartesian position
     corner:

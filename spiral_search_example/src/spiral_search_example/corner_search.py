@@ -26,7 +26,7 @@ SAFETY_RETRACTION_TRIGGER = 'retract to safety'
 RESTART_TEST_TRIGGER = 'restart test'
 RUN_LOOP_TRIGGER = 'run looped code'
 
-class SpiralSearch(ConnTask):
+class CornerSearch(ConnTask):
 
 
     def __init__(self, conntext, interface, target_frame_name, connfig_name):
@@ -59,11 +59,12 @@ class SpiralSearch(ConnTask):
         ]
 
         self.step_list:dict = { APPROACH_STATE:       (FindSurface, []),
-                                FIND_HOLE_STATE:      (CornerToFindHole, []),
+                                FIND_HOLE_STATE:      (SpiralToFindHole, []),
                                 INSERTING_PEG_STATE:  (FindSurfaceFullCompliant, []),
                                 SAFETY_RETRACT_STATE: (SafetyRetraction, []),
                                 COMPLETION_STATE:     (ExitStep, [])
                                 }
+        # self.step_list:dict = { APPROACH_STATE:       (WiggleRotationContinuously, [])}
         # #Initialize the state machine "Machine" init in your Conntask instance
         ConnTask.__init__(self, conntext, states, transitions, target_frame_name, connfig_name=connfig_name)
 
@@ -135,6 +136,24 @@ class SpiralSearch(ConnTask):
         self.algorithm_execute()
         self.interface.send_info("Spiral Search all done!")
 
+class WiggleRotationContinuously(ConnStep):
+    def __init__(self, connTask: ConnTask) -> None:
+        ConnStep.__init__(self, connTask)
+        # Create a move policy which will move downward along a line
+        # at x=0, y=0
+        self.create_move_policy(move_mode="set",
+                                force=[0, 0, 0],
+                                orientation=np.array([0,0,0]))
+        self.start_time = 0
+    def execute(self):
+        now = self.task.interface.get_unified_time(float=True)
+        if self.start_time == 0:
+            self.start_time = now
+        self._move_policy.orientation = np.sin((now - self.start_time)/4) * np.array([45,33,0])
+    def exit_conditions(self):
+        return False
+
+
 class FindSurface(ConnStep):
 
     def __init__(self, connTask: ConnTask) -> None:
@@ -144,7 +163,8 @@ class FindSurface(ConnStep):
         self.create_move_policy(move_mode="line",
                                 vector=[0,0,1],
                                 origin=[0,0,0],
-                                force=[0, 0, -7])
+                                force=[0, 0, -7],
+                                orientation=[45,33,0])
 
     def exit_conditions(self) -> bool:
         return self.is_static() and self.in_collision()
@@ -170,7 +190,8 @@ class SpiralToFindHole(ConnStep):
         ConnStep.__init__(self, connTask)
         self.create_move_policy(move_mode="line",
                                 vector=[0,0,1],
-                                force=[0, 0, -7])
+                                force=[0, 0, -7],
+                                orientation=[45,33,0])
 
         self.spiral_params = self.task.connfig['task']['spiral_params']
         self.safe_clearance = self.task.connfig['objects']['dimensions']['safe_clearance']/100 #convert to m
