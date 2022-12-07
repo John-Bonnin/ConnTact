@@ -235,7 +235,7 @@ class Conntext:
         goal_pose.pose.position = Point(*pose_command[0])
         goal_pose.pose.orientation = Quaternion(*utils.euToQ(pose_command[1]))
         # Set header values
-        goal_pose.header.stamp = self.interface.get_unified_time()
+        goal_pose.header.stamp = self.interface.get_unified_time(rostime=True)
         goal_pose.header.frame_id = self.target_frame_name
         # goal_pose.header.frame_id = "base_link"
 
@@ -399,7 +399,7 @@ class Conntext:
         wrench_stamped = WrenchStamped()
         wrench_stamped.wrench = Wrench(Point(*force), Point(*torque))
         # create header
-        wrench_stamped.header.stamp = self.interface.get_unified_time()
+        wrench_stamped.header.stamp = self.interface.get_unified_time(rostime=True)
         wrench_stamped.header.frame_id = "base_link"
         #
         # # create wrench

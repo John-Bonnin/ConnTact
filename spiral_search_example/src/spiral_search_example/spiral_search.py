@@ -204,13 +204,13 @@ class SpiralToFindHole(ConnStep):
         x,y vector currently comes from x_ and y_pos_offset variables.
         """
         curr_time = self.conntext.interface.get_unified_time() - self.start_time
-        curr_time_numpy = np.double(curr_time.to_sec())
+        # curr_time_numpy = np.double(curr_time.to_sec())
         frequency = self.spiral_params['frequency'] #because we refer to it a lot
         #Calculate the amplitude of the spiral:
         curr_amp = self.spiral_params['min_amplitude'] + self.safe_clearance * \
-                   np.mod(2.0 * np.pi * frequency * curr_time_numpy, self.spiral_params['max_cycles'])
-        x_pos = curr_amp * np.cos(2.0 * np.pi * frequency * curr_time_numpy)
-        y_pos = curr_amp * np.sin(2.0 * np.pi * frequency * curr_time_numpy)
+                   np.mod(2.0 * np.pi * frequency * curr_time, self.spiral_params['max_cycles'])
+        x_pos = curr_amp * np.cos(2.0 * np.pi * frequency * curr_time)
+        y_pos = curr_amp * np.sin(2.0 * np.pi * frequency * curr_time)
         pose_position = [x_pos, y_pos, 0]
 
         return pose_position

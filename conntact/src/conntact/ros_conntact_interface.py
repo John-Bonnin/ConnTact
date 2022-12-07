@@ -122,15 +122,16 @@ class ConntactROSInterface(ConntactInterface):
             except yaml.YAMLError as exc:
                 print(exc)
 
-    def get_unified_time(self, float=False):
+    def get_unified_time(self, rostime=False):
         """
         :return: Current time. Conntact always measures periods relative to time since
         Conntext.__init__ ran by storing this value at that time; you can use this
         method to make Conntact timestamps correspond with other elements of your system.
+        If rostime is passed True, returns a time.ros_time object.
         :rtype: :class: `double`
         """
         # return np.double(rospy.get_rostime().to_sec())
-        if not float:
+        if rostime:
             return rospy.get_rostime()
         return rospy.get_time()
 

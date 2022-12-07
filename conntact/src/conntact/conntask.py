@@ -323,8 +323,8 @@ class ConnStep:
         if self.completion_confidence > self.exitThreshold:
             if self.holdStartTime == 0:
                 # Start counting down to completion as long as we don't drop below threshold again:
-                self.holdStartTime = self.task.interface.get_unified_time(float=True)
-            elif self.holdStartTime < self.task.interface.get_unified_time(float=True) - self.exitPeriod:
+                self.holdStartTime = self.task.interface.get_unified_time()
+            elif self.holdStartTime < self.task.interface.get_unified_time() - self.exitPeriod:
                 # it's been long enough, exit loop
                 return True
         else:
